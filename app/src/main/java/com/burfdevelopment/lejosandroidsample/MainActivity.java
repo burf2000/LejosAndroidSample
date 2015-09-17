@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
                         runOnUiThread(new Runnable() {
                             public void run() {
-                                irSensorTextView.setText("" + irSample[0]);
+                                irSensorTextView.setText("IR Distance: " + irSample[0]);
                                 //touchSensorTextView.setText("" + touchSample[0]);
                             }
                         });
