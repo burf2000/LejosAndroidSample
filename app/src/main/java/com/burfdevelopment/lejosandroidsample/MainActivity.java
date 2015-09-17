@@ -2,14 +2,12 @@ package com.burfdevelopment.lejosandroidsample;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,11 +18,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import lejos.hardware.Audio;
-import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3IRSensor;
-import lejos.hardware.sensor.EV3TouchSensor;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.remote.ev3.RemoteRequestEV3;
+import lejos.remote.ev3.RemoteRequestSampleProvider;
 import lejos.robotics.RegulatedMotor;
 import lejos.robotics.SampleProvider;
 
@@ -41,7 +37,11 @@ public class MainActivity extends AppCompatActivity {
     private RegulatedMotor motorA;
     private RemoteRequestEV3 ev3Brick;
     private EV3IRSensor irSensor;
-    private EV3TouchSensor touchSensor;
+
+    //There is a bug with touch sensor
+    //private EV3TouchSensor touchSensor;
+
+    private RemoteRequestSampleProvider sp;
     private Audio audio;
 
     private SampleProvider irSampler;
@@ -104,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     private void motorOn() {
@@ -172,9 +171,8 @@ public class MainActivity extends AppCompatActivity {
         irSampler = irSensor.getMode("Distance");
         irSample = new float[irSampler.sampleSize()];
 
-//        touchSensor = new EV3TouchSensor(ev3Brick.getPort("S1"));
-//        touchSampler = touchSensor.getTouchMode();
-//        touchSample = new float[touchSampler.sampleSize()];
+        sp = (RemoteRequestSampleProvider) ev3Brick.createSampleProvider("S1", "lejos.hardware.sensor.EV3TouchSensor", "Touch");
+        touchSample = new float[sp.sampleSize()];
 
         threads.submit(new Runnable() {
             @Override
@@ -186,11 +184,12 @@ public class MainActivity extends AppCompatActivity {
 
                         irSampler.fetchSample(irSample, 0);
                         //touchSampler.fetchSample(touchSample, 0);
+                        sp.fetchSample(touchSample, 0);
 
                         runOnUiThread(new Runnable() {
                             public void run() {
                                 irSensorTextView.setText("IR Distance: " + irSample[0]);
-                                //touchSensorTextView.setText("" + touchSample[0]);
+                                touchSensorTextView.setText("Touch: " + touchSample[0]);
                             }
                         });
 
@@ -213,9 +212,9 @@ public class MainActivity extends AppCompatActivity {
                     ev3Brick = null;
                 }
 
-//                if (touchSensor != null) {
-//                    touchSensor.close();
-//                }
+                if (sp != null) {
+                    sp.close();
+                }
             }
         });
     }
