@@ -26,7 +26,7 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         android:id="@+id/ipTextView" />
 
-    <TextView android:text="Connect motor to port A\nConnect touch Sensor to port 1\nConnect IR Sensor to port 4\nIf paired with Brick and IP correct, press connect" android:layout_width="match_parent"
+    <TextView android:text="Connect motor to port A\nConnect touch Sensor to port 1\nConnect IR Sensor to port 4\nIf paired with Brick and IP correct, press connect\nRemember to hit disconnnect else your get port issues" android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/activity_vertical_margin"/>
 
